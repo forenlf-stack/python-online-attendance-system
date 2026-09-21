@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon %}
+{% from '_map.html' import assets, fence_map %}
+{% block map_assets %}{{ assets() }}{% endblock %}
+{% block title %}考勤结果{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">教师工作台 / 考勤结果</p><h1>{{ task.title }}</h1><p class="muted">{{ task.target_class_name }} · {{ state }} · 半径 {{ '%g'|format(task.radius_meters) }} 米</p><p class="small muted">{{ task.start_time|beijing }} 至 {{ task.end_time|beijing }}</p></div><div class="page-actions"><a class="button secondary" href="{{ url_for('teacher.dashboard') }}">{{ icon('back') }} 返回任务列表</a><a class="button secondary" href="{{ url_for('teacher.results', task_id=task.id) }}">{{ icon('refresh') }} 刷新结果</a></div></div>
+<div class="stats"><div class="panel"><span>应到人数</span><strong id="expected-count">{{ stats.expected }}</strong></div><div class="panel"><span>已签到</span><strong id="signed-count">{{ stats.signed }}</strong></div><div class="panel"><span>{{ '缺勤' if state == '已结束' else '未签到' }}</span><strong id="missing-count">{{ stats.missing }}</strong></div></div>
+<section class="panel result-map-panel">
+  <h2>签到范围与记录位置</h2>
+  {{ fence_map(task=task) }}
+  <label class="record-map-label">查看学生签到位置
+    <select id="record-map-select">
+      <option value="">仅显示签到范围</option>
+      {% for student, record in rows %}{% if record and record.has_location %}
+      <option value="{{ record.id }}" data-latitude="{{ record.latitude }}" data-longitude="{{ record.longitude }}"
+              data-distance="{{ record.distance_meters }}">{{ student.student_no }} · {{ student.name }}</option>
+      {% endif %}{% endfor %}
+    </select>
+  </label><p class="small muted">仅显示有效的定位签到，教师补签没有位置数据。</p>
+</section>
+<section class="panel table-panel"><div class="section-heading"><h2>班级考勤名单</h2><span class="small muted">任务发布时的固定名单</span></div><div class="table-scroll"><table><thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>记录时间</th><th>距离</th><th>状态</th><th>操作</th></tr></thead><tbody>{% for student, record in rows %}<tr><td>{{ student.student_no }}</td><td>{{ student.name }}</td><td>{{ task.target_class_name }}{% if student.class_name != task.target_class_name %}<br><span class="small muted">现属 {{ student.class_name }}</span>{% endif %}</td><td>{{ record.checkin_time|beijing if record else '—' }}</td><td>{% if record and record.has_location %}{{ '%.2f'|format(record.distance_meters) }} 米<details><summary>位置详情</summary><span class="small">纬度 {{ record.latitude }}<br>经度 {{ record.longitude }}</span></details>{% else %}—{% endif %}</td><td><span class="badge {% if record %}active{% endif %}">{{ '已签到' if record else ('缺勤' if state == '已结束' else ('未开始' if state == '未开始' else '未签到')) }}</span>{% if record and record.source == 'teacher' %}<br><span class="small muted">教师补签</span>{% endif %}</td><td><a class="button secondary compact" href="{{ url_for('management.adjust_attendance', task_id=task.id, student_id=student.id) }}">调整签到</a></td></tr>{% else %}<tr><td colspan="7">该班级没有学生。</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

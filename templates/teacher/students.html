@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon %}
+{% block title %}学生管理{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">TEACHER WORKSPACE <span class="role-tag">学生管理</span></p><h1>学生信息，一处管理</h1><p class="muted">查找学生、调整所属班级，或进入你的任务修改签到状态。</p></div><a class="button secondary" href="{{ url_for('teacher.dashboard') }}">{{ icon('back') }}返回任务列表</a></div>
+<div class="notice">学生名册由教师共同维护；签到状态只能在自己发布的任务中调整。</div>
+<section class="panel table-panel">
+<form method="get" class="directory-search"><label>学号或姓名<input name="q" maxlength="80" value="{{ keyword }}" placeholder="输入学号或姓名"></label><label>当前班级<select name="class_name"><option value="">全部班级</option>{% for cls in classes %}<option value="{{ cls }}" {% if selected_class == cls %}selected{% endif %}>{{ cls }}</option>{% endfor %}</select></label><button type="submit">{{ icon('search') }}查询</button><a class="button secondary" href="{{ url_for('management.students') }}">重置</a></form>
+<div class="section-heading"><h2>学生名册 <span class="count-pill">{{ pagination.total }} 人</span></h2><span class="small muted">修改不会影响账号和密码</span></div>
+<div class="table-scroll"><table><thead><tr><th>学号</th><th>姓名</th><th>当前班级</th><th>操作</th></tr></thead><tbody>{% for student in pagination.items %}<tr><td>{{ student.student_no }}</td><td class="table-title">{{ student.name }}</td><td>{{ student.class_name }}</td><td><a class="button secondary compact" href="{{ url_for('management.edit_student', student_id=student.id) }}">管理学生 {{ icon('arrow', 15) }}</a></td></tr>{% else %}<tr><td class="empty" colspan="4">未找到匹配的学生，请调整查询条件。</td></tr>{% endfor %}</tbody></table></div>
+{% if pagination.pages > 1 %}<nav class="pagination" aria-label="学生列表分页">{% if pagination.has_prev %}<a class="button secondary" href="{{ url_for('management.students', page=pagination.prev_num, q=keyword, class_name=selected_class) }}">上一页</a>{% endif %}<span>第 {{ pagination.page }} / {{ pagination.pages }} 页</span>{% if pagination.has_next %}<a class="button secondary" href="{{ url_for('management.students', page=pagination.next_num, q=keyword, class_name=selected_class) }}">下一页</a>{% endif %}</nav>{% endif %}
+</section>
+{% endblock %}

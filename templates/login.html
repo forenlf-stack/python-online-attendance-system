@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<div class="login-layout">
+  <section class="login-intro"><p class="eyebrow">CAMPUS ATTENDANCE</p><h1>每一次到场，<br>都有记录。</h1><p class="lead">从课堂到实训，让签到更清晰。<br>选择身份登录，开始今天的学习与教学。</p><div class="intro-note"><span class="circle-mark">◎</span><div><strong>在指定范围内，完成签到</strong><p>仅在点击签到时获取当前位置。</p></div></div></section>
+  <section class="panel login-panel"><p class="eyebrow">欢迎回来</p><h2>登录在线考勤</h2><p class="muted">使用教师工号或学生学号登录</p>
+    {% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <fieldset><legend>选择身份</legend><div class="role-options"><label><input type="radio" name="role" value="student" {% if request.form.get('role', 'student') != 'teacher' %}checked{% endif %}> 学生</label><label><input type="radio" name="role" value="teacher" {% if request.form.get('role') == 'teacher' %}checked{% endif %}> 教师</label></div></fieldset>
+      <label>工号 / 学号<input name="account" autocomplete="username" maxlength="32" required value="{{ request.form.get('account', '') }}" placeholder="请输入账号"></label>
+      <label>密码<input name="password" type="password" autocomplete="current-password" required placeholder="请输入密码"></label>
+      <button type="submit">登录</button>
+    </form><p class="small muted">仅供课程实训使用 · 账号由项目预置</p>
+  </section>
+</div>
+{% endblock %}

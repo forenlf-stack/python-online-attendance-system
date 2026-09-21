@@ -1,0 +1,31 @@
+.fence-map { min-width:0; margin:4px 0 18px; border:1px solid #dce5f0; border-radius:10px; overflow:hidden; background:white; }
+.fence-map > summary { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; background:#f5f8fd; font-size:13px; font-weight:600; list-style:none; }
+.fence-map > summary::-webkit-details-marker { display:none; }
+.map-summary-title { display:inline-flex; align-items:center; gap:7px; }
+.map-expand { font-size:20px; line-height:1; transition:transform .16s; }
+.fence-map[open] .map-expand { transform:rotate(180deg); }
+.fence-map-content { padding:12px; }
+.map-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.map-toolbar button { padding:7px 9px; min-height:32px; font-size:12px; }
+.map-caption { display:inline-flex; align-items:center; gap:5px; margin-right:auto; font-size:12px; color:var(--muted); }
+.map-status { margin:10px 0; color:#536a85; min-height:20px; }
+.map-canvas { height:320px; border-radius:8px; z-index:0; background:#edf2f5; }
+.map-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:125px; padding:22px 14px; text-align:center; background:#f5f8fc; border:1px dashed #d4deeb; border-radius:8px; color:#6a819d; }
+.map-placeholder-title { color:#3d5571; font-size:14px; }
+.map-placeholder p { margin:0; }
+.fence-map[data-load-state=error] .map-status { color:#946525; }
+.map-legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:12px; font-size:11px; color:#516b88; }
+.map-legend span { display:inline-flex; align-items:center; gap:5px; }
+.map-legend i { width:10px; height:10px; border-radius:50%; }
+.legend-center { background:#245fc0; }
+.legend-position { background:#d06724; }
+.map-position { margin:10px 0 0; color:#36577e; }
+.map-position:empty { display:none; }
+.map-note { font-size:11px; margin:8px 0 0; }
+.result-map-panel { margin-bottom:24px; }
+.record-map-label { display:block; font-size:14px; }
+.record-map-label select { display:block; margin-top:8px; max-width:420px; }
+.leaflet-container { font-family:"Segoe UI","Microsoft YaHei",sans-serif; }
+.leaflet-container .leaflet-control-attribution { font-size:10px; }
+.task-card .map-canvas { height:260px; }
+@media(max-width:640px) { .map-canvas { height:260px; } .fence-map-content { padding:9px; } }

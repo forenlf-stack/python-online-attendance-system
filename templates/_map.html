@@ -1,0 +1,31 @@
+{% from '_ui.html' import icon %}
+{% macro assets() -%}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/leaflet/leaflet.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/maps.css') }}">
+<script src="{{ url_for('static', filename='vendor/leaflet/leaflet.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/maps.js') }}" defer></script>
+{%- endmacro %}
+{% macro fence_map(task=none, form=false, opened=false) -%}
+<details class="fence-map" {% if opened %}open{% endif %} data-form="{{ 'true' if form else 'false' }}"
+         {% if task %}data-latitude="{{ task.center_latitude }}" data-longitude="{{ task.center_longitude }}" data-radius="{{ task.radius_meters }}"{% endif %}>
+  <summary><span class="map-summary-title">{{ icon('map') }}查看签到范围</span><span class="map-expand" aria-hidden="true">⌄</span></summary>
+  <div class="fence-map-content">
+    <div class="map-toolbar">
+      <span class="map-caption">{{ icon('pin', 15) }}圆形电子围栏</span>
+      <button type="button" class="secondary small-button map-fit" disabled>{{ icon('pin', 15) }}回到范围</button>
+      <button type="button" class="secondary small-button map-retry" hidden>{{ icon('refresh', 15) }}重新加载地图</button>
+    </div>
+    <p class="map-status small" role="status" aria-live="polite">展开后查看地图。</p>
+    <div class="map-canvas" role="region" aria-label="签到范围在线地图" hidden></div>
+    <div class="map-placeholder">
+      <span class="map-placeholder-icon">{{ icon('map', 28) }}</span>
+      <strong class="map-placeholder-title">设置签到中心</strong>
+      <span class="small muted">地图显示不影响正常签到</span>
+    </div>
+    <div class="map-legend"><span><i class="legend-center"></i>中心 / 范围</span><span><i class="legend-position"></i>签到位置</span></div>
+    <p class="map-position small" aria-live="polite"></p>
+    <p class="small muted map-note">蓝色圆圈为允许范围，签到结果以服务器校验为准。</p>
+    <noscript><p class="notice">请启用 JavaScript 查看地图。</p></noscript>
+  </div>
+</details>
+{%- endmacro %}

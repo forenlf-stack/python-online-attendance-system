@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon %}
+{% block title %}调整签到 · {{ student.name }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">教师工作台 / 签到调整</p><h1>{{ student.name }} · {{ student.student_no }}</h1><p class="muted">{{ task.title }} · {{ task.target_class_name }}</p></div><div class="page-actions"><a class="button secondary" href="{{ url_for('teacher.results', task_id=task.id) }}">{{ icon('back') }}返回考勤结果</a><a class="button secondary" href="{{ url_for('management.edit_student', student_id=student.id) }}">学生信息 {{ icon('arrow') }}</a></div></div>
+<div class="form-layout"><section class="panel"><h2>调整签到状态</h2>
+<div class="attendance-current"><span class="muted">当前状态</span><strong>{{ '已签到 · 教师补签' if record and record.source == 'teacher' else '已签到 · 定位签到' if record else '已撤销' if latest and latest.action == 'absent' else '缺勤' if state == '已结束' else '未开始' if state == '未开始' else '未签到' }}</strong>{% if record %}<span class="small muted">记录时间 {{ record.checkin_time|beijing }}</span>{% endif %}</div>
+{% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+{% if state == '未开始' %}<div class="notice">任务尚未开始，暂不能调整签到状态。</div>{% else %}
+<form method="post" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="version" value="{{ version }}"><input type="hidden" name="original_id" value="{{ original_id }}">
+<label>调整操作<select name="action" required><option value="">请选择操作</option>{% if not record %}<option value="present" {% if values.get('action') == 'present' %}selected{% endif %}>教师补签：设为已签到</option>{% else %}<option value="absent" {% if values.get('action') == 'absent' %}selected{% endif %}>撤销签到：设为未签到 / 缺勤</option>{% endif %}{% if latest and latest.action != 'restore' %}<option value="restore" {% if values.get('action') == 'restore' %}selected{% endif %}>恢复原始状态：以学生定位签到为准</option>{% endif %}</select></label>
+<label>调整原因<input name="reason" required maxlength="300" value="{{ values.get('reason', '') }}" placeholder="填写核实情况，此原因也会展示给学生"></label>
+<div class="notice small">补签会记入到场统计，记录时间为本次操作时间，不生成经纬度。撤销后学生不能自行重新签到；如需重新开放，请恢复原始状态。已有定位记录会保留。</div>
+<div class="form-actions"><button type="submit">{{ icon('check') }}保存签到调整</button><a class="button secondary" href="{{ url_for('teacher.results', task_id=task.id) }}">取消</a></div></form>{% endif %}</section>
+<section class="panel student-tasks"><h2>原始定位记录</h2>{% if original %}<p><span class="badge active">原始签到成功</span></p><p>签到时间：{{ original.checkin_time|beijing }}</p><p>距中心：{{ '%.2f'|format(original.distance_meters) }} 米</p><p class="small muted">纬度 {{ original.latitude }}<br>经度 {{ original.longitude }}</p>{% else %}<p class="muted">无学生定位签到记录。</p>{% endif %}<p class="small muted">恢复原始状态时，有原始记录则恢复为已签到；无原始记录则恢复为未签到或缺勤。</p></section></div>
+<section class="panel table-panel management-history"><div class="section-heading"><h2>签到调整记录</h2><span class="small muted">最近 50 次 · 历史保留</span></div><div class="table-scroll"><table><thead><tr><th>操作时间</th><th>教师</th><th>操作</th><th>原因</th></tr></thead><tbody>{% for entry in history %}<tr><td>{{ entry.created_at|beijing }}</td><td>{{ entry.teacher.name }}</td><td>{{ actions[entry.action] }}</td><td>{{ entry.reason }}</td></tr>{% else %}<tr><td class="empty" colspan="4">暂无调整记录</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

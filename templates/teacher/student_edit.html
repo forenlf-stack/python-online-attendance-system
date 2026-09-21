@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon %}
+{% block title %}管理学生 · {{ student.name }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">教师工作台 / 学生管理</p><h1>{{ student.name }}</h1><p class="muted">{{ student.student_no }} · 当前班级：{{ student.class_name }}</p></div><a class="button secondary" href="{{ url_for('management.students') }}">{{ icon('back') }}返回学生名册</a></div>
+<div class="form-layout"><section class="panel"><h2>基本信息与班级</h2>
+{% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+<form method="post" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="version" value="{{ version }}">
+<label>姓名<input name="name" required maxlength="80" value="{{ values.get('name', '') }}"></label>
+<label>所属班级<input name="class_name" list="class-options" required maxlength="80" value="{{ values.get('class_name', '') }}"><span class="small muted">可选择已有班级，也可输入新班级名称。</span></label><datalist id="class-options">{% for cls in classes %}<option value="{{ cls }}">{% endfor %}</datalist>
+<label>修改原因<input name="reason" required maxlength="300" value="{{ values.get('reason', '') }}" placeholder="例如：教务安排转班或姓名录入更正"></label>
+<p class="notice small">转班只影响此后新建的任务。已发布任务（包括尚未开始的任务）保留原名单，学生仍可按原任务规则签到。</p>
+<div class="form-actions"><button type="submit">{{ icon('check') }}保存学生信息</button><a class="button secondary" href="{{ url_for('management.students') }}">取消</a></div></form></section>
+<section class="panel student-tasks"><h2>调整此学生的签到</h2><p class="small muted">仅列出你发布、且名单中包含此学生的任务。</p><div class="management-task-list">{% for task in tasks %}<a href="{{ url_for('management.adjust_attendance', task_id=task.id, student_id=student.id) }}"><span><strong>{{ task.title }}</strong><small>{{ task.target_class_name }} · {{ task.start_time|beijing }}</small></span>{{ icon('arrow') }}</a>{% else %}<p class="muted">该学生暂未参加你发布的任务。</p>{% endfor %}</div></section></div>
+<section class="panel table-panel management-history"><div class="section-heading"><h2>信息修改记录</h2><span class="small muted">最近 50 次</span></div><div class="table-scroll"><table><thead><tr><th>时间 / 操作教师</th><th>姓名变化</th><th>班级变化</th><th>原因</th></tr></thead><tbody>{% for entry in history %}<tr><td>{{ entry.created_at|beijing }}<br>{{ entry.teacher.name }}</td><td>{{ entry.old_name }} → {{ entry.new_name }}</td><td>{{ entry.old_class }} → {{ entry.new_class }}</td><td>{{ entry.reason }}</td></tr>{% else %}<tr><td colspan="4" class="empty">暂无修改记录</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

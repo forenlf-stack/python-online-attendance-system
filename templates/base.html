@@ -1,0 +1,34 @@
+<!doctype html>
+{% from '_ui.html' import icon %}
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}在线考勤{% endblock %} · 企业实训</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block map_assets %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/location.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/interface.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳至主要内容</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-icon">✓</span> 在线考勤<span class="brand-sub">企业实训</span></a>
+    <nav aria-label="主导航">
+      {% if session.get('role') == 'teacher' %}
+      <a class="nav-link" {% if request.endpoint in ['teacher.dashboard', 'teacher.results'] %}aria-current="page"{% endif %} href="{{ url_for('teacher.dashboard') }}">{{ icon('list') }}我的任务</a>
+      <a class="nav-link" {% if request.endpoint == 'teacher.create_task' %}aria-current="page"{% endif %} href="{{ url_for('teacher.create_task') }}">{{ icon('plus') }}创建任务</a>
+      <a class="nav-link" {% if request.endpoint and request.endpoint.startswith('management.') %}aria-current="page"{% endif %} href="{{ url_for('management.students') }}">{{ icon('list') }}学生管理</a>
+      {% endif %}
+      {% if session.get('role') == 'student' %}
+      <a class="nav-link" {% if request.endpoint == 'student.dashboard' %}aria-current="page"{% endif %} href="{{ url_for('student.dashboard') }}">{{ icon('list') }}班级任务</a>
+      <a class="nav-link" {% if request.endpoint == 'student.records' %}aria-current="page"{% endif %} href="{{ url_for('student.records') }}">{{ icon('check') }}个人记录</a>
+      {% endif %}
+      {% if session.get('user_id') %}<form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-button logout-button" type="submit">{{ icon('logout') }}退出登录</button></form>{% endif %}
+    </nav>
+  </div></header>
+  <main class="container" id="main-content">{% for category, message in get_flashed_messages(with_categories=true) %}<div class="notice flash-message {{ category }}" role="status">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main>
+  <footer class="container footer"><span>基于 Python 的在线考勤系统</span><span>统一使用北京时间 UTC+08:00</span></footer>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon, status_badge, task_tools %}
+{% block title %}我的签到任务{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">TEACHER WORKSPACE <span class="role-tag">教师端</span></p><h1>你好，{{ g.user.name }}</h1><p class="muted">每一堂实训课，从有序签到开始。</p></div>
+  <div class="page-actions"><a class="button secondary" href="{{ url_for('teacher.dashboard') }}">{{ icon('refresh') }}刷新任务</a><a class="button" href="{{ url_for('teacher.create_task') }}">{{ icon('plus') }}创建签到任务</a></div>
+</div>
+<section class="task-workspace" aria-label="我的签到任务">
+  <div class="section-heading"><h2>我的签到任务 <span class="count-pill">{{ items|length }}</span></h2><span class="small muted">按班级管理 · 实时查看结果</span></div>
+  {{ task_tools(['进行中', '未开始', '已结束']) }}
+  <div class="task-grid">
+    {% for task, state, stats in items %}
+    <article class="panel task-card" data-task-state="{{ state }}" data-search="{{ task.title }} {{ task.target_class_name }}">
+      <div class="card-top"><span class="class-label">{{ icon('list', 15) }}{{ task.target_class_name }}</span>{{ status_badge(state) }}</div>
+      <h3>{{ task.title }}</h3>
+      <div class="task-time">{{ icon('clock') }}<div><span>开始 <time>{{ task.start_time|beijing }}</time></span><span>结束 <time>{{ task.end_time|beijing }}</time></span></div></div>
+      <div class="card-metrics"><span><strong>{{ stats.signed }}</strong> / {{ stats.expected }} 人已签到</span><span>{{ icon('pin', 14) }}{{ '%g'|format(task.radius_meters) }} 米</span></div>
+      <progress class="attendance-progress" value="{{ stats.signed }}" max="{{ stats.expected or 1 }}" aria-label="已签到 {{ stats.signed }} 人，应到 {{ stats.expected }} 人"></progress>
+      <a class="button card-link" href="{{ url_for('teacher.results', task_id=task.id) }}">查看考勤结果 {{ icon('arrow') }}</a>
+    </article>
+    {% else %}
+    <section class="panel empty"><span class="empty-icon">{{ icon('list', 28) }}</span><h3>开始你的第一次课堂签到</h3><p class="muted">选择班级、设置范围，即可发布签到任务。</p><a class="button" href="{{ url_for('teacher.create_task') }}">{{ icon('plus') }}创建签到任务</a></section>
+    {% endfor %}
+  </div>
+  <div class="panel empty filter-empty" hidden><span class="empty-icon">{{ icon('search', 28) }}</span><h3>没有找到匹配的任务</h3><p class="muted">试试其他关键词，或查看全部任务。</p><button class="secondary filter-reset" type="button">清除筛选</button></div>
+</section>
+{% endblock %}
