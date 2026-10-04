@@ -1,3 +1,6 @@
 {% extends 'base.html' %}
+{% from '_ui.html' import icon %}
 {% block title %}请求提示{% endblock %}
-{% block content %}<section class="panel empty"><p class="eyebrow">{{ code }}</p><h1>{{ message }}</h1><a class="button" href="{{ url_for('index') }}">返回首页</a></section>{% endblock %}
+{% block content %}
+<section class="panel error-panel"><span class="error-code">{{ code }}</span><h1>{{ message }}</h1><p class="muted">{% if code == 403 %}当前账号无权访问此内容。请返回自己的工作台，或核对登录身份。{% elif code == 404 %}链接可能不完整，或对应内容不存在。请从工作台重新进入。{% elif code == 400 %}请返回工作台重新打开页面后提交；如果登录已失效，请重新登录。{% else %}请从工作台重试。如果问题持续，请联系课程负责人。{% endif %}</p><div class="page-actions"><a class="button" href="{{ url_for('index') }}">{{ icon('back') }}返回首页</a><a class="button secondary" href="{{ url_for('help_page') }}#location">{{ icon('help') }}查看使用帮助</a></div></section>
+{% endblock %}

@@ -7,6 +7,7 @@ from models import AttendanceAdjustment, AttendanceRecord, AttendanceTask, Stude
 from routes.auth import role_required
 from services.attendance import ACTION_LABELS, effective_record
 from services.time_utils import task_state
+from services.navigation import directory_context
 
 bp = Blueprint("management", __name__, url_prefix="/teacher")
 
@@ -45,6 +46,7 @@ def students():
 @bp.route("/students/<int:student_id>", methods=["GET", "POST"])
 @role_required("teacher")
 def edit_student(student_id):
+    context = directory_context(request.args)
     student = db.get_or_404(Student, student_id)
     history = db.session.scalars(db.select(StudentChange).where(StudentChange.student_id == student_id)
         .order_by(StudentChange.version.desc()).limit(50)).all()
@@ -67,7 +69,7 @@ def edit_student(student_id):
             student.name, student.class_name = name, class_name
             db.session.commit()
             flash("学生信息已更新；已发布任务的名单和历史考勤保持不变。", "success")
-            return redirect(url_for("management.edit_student", student_id=student.id))
+            return redirect(url_for("management.edit_student", student_id=student.id, **context))
         except ValueError as exc:
             error, code = str(exc), 400
         except IntegrityError:
@@ -83,7 +85,7 @@ def edit_student(student_id):
         .where(TaskMember.student_id == student_id, AttendanceTask.teacher_id == g.user.id)
         .order_by(AttendanceTask.created_at.desc())).all()
     return render_template("teacher/student_edit.html", student=student, values=values, version=version,
-                           classes=classes, history=history, tasks=tasks, error=error), code
+                           classes=classes, history=history, tasks=tasks, error=error, context=context), code
 
 
 @bp.route("/tasks/<int:task_id>/students/<int:student_id>/attendance", methods=["GET", "POST"])

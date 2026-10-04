@@ -1,4 +1,5 @@
 import sqlite3
+from collections import Counter
 
 from flask import Blueprint, abort, current_app, g, jsonify, render_template, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -24,7 +25,8 @@ def dashboard():
             ("可以签到" if task_state(task, now) == "进行中" else task_state(task, now)))
         items.append((task, state))
         adjustments[task.id] = adjustment
-    return render_template("student/dashboard.html", items=items, adjustments=adjustments)
+    return render_template("student/dashboard.html", items=items, adjustments=adjustments,
+                           counts=Counter(state for _, state in items), updated_at=now)
 
 
 

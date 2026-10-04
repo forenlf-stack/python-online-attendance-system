@@ -7,6 +7,9 @@
   'list': 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
   'clock': 'M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
   'logout': 'M9 5H4v14h5M10 12h11m-4-4 4 4-4 4', 'check': 'M5 12l4 4L19 6',
+  'help': 'M9 9a3 3 0 1 1 5 2c-1 1-2 1-2 3M12 17h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
+  'download': 'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',
+  'users': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M17 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-4M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
   'map': 'm3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16'
 } %}
 <svg class="ui-icon" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ paths.get(name, paths['arrow']) }}"/></svg>
@@ -22,7 +25,15 @@
     <button type="button" class="filter-button selected" data-filter="全部" aria-pressed="true">全部任务</button>
     {% for state in states %}<button type="button" class="filter-button" data-filter="{{ state }}" aria-pressed="false">{{ state }}</button>{% endfor %}
   </div>
-  <label class="task-search-wrap">{{ icon('search') }}<input type="search" class="task-search" aria-label="搜索任务" placeholder="搜索任务、班级或教师" autocomplete="off"></label>
+  <label class="task-search-wrap">{{ icon('search') }}<input type="search" class="task-search" aria-label="搜索任务" placeholder="搜索任务、班级或教师" maxlength="100" autocomplete="off"></label>
 </div>
 <p class="filter-feedback small muted" aria-live="polite" hidden></p>
+{%- endmacro %}
+
+{% macro breadcrumbs(items) -%}
+<nav class="breadcrumbs" aria-label="当前位置">{% for label, href in items %}{% if not loop.first %}<span aria-hidden="true">/</span>{% endif %}{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}{% endfor %}</nav>
+{%- endmacro %}
+
+{% macro workflow_steps(items) -%}
+<ol class="workflow-steps" aria-label="操作步骤">{% for title, text in items %}<li><span class="step-number">{{ loop.index }}</span><div><strong>{{ title }}</strong><span>{{ text }}</span></div></li>{% endfor %}</ol>
 {%- endmacro %}

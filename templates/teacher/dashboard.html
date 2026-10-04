@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
-{% from '_ui.html' import icon, status_badge, task_tools %}
+{% from '_ui.html' import icon, status_badge, task_tools, workflow_steps %}
 {% block title %}我的签到任务{% endblock %}
 {% block content %}
 <div class="page-heading">
   <div><p class="eyebrow">TEACHER WORKSPACE <span class="role-tag">教师端</span></p><h1>你好，{{ g.user.name }}</h1><p class="muted">每一堂实训课，从有序签到开始。</p></div>
   <div class="page-actions"><a class="button secondary" href="{{ url_for('teacher.dashboard') }}">{{ icon('refresh') }}刷新任务</a><a class="button" href="{{ url_for('teacher.create_task') }}">{{ icon('plus') }}创建签到任务</a></div>
 </div>
-<section class="task-workspace" aria-label="我的签到任务">
-  <div class="section-heading"><h2>我的签到任务 <span class="count-pill">{{ items|length }}</span></h2><span class="small muted">按班级管理 · 实时查看结果</span></div>
+<div class="overview-grid" aria-label="任务概览">
+{% for state, label, hint, glyph in [('进行中', '正在进行', '进入任务，查看实时到场情况', 'clock'), ('未开始', '待开始', '提前核对时间与签到范围', 'list'), ('已结束', '已结束', '复核考勤、补签或导出名单', 'check')] %}
+<a class="overview-card" href="{{ url_for('teacher.dashboard', state=state) }}#task-list" data-quick-filter="{{ state }}"><span class="overview-icon">{{ icon(glyph, 22) }}</span><div><span>{{ label }}</span><strong data-count-state="{{ state }}">{{ counts[state] }}</strong><small>{{ hint }}</small></div>{{ icon('arrow', 16) }}</a>
+{% endfor %}</div>
+<div class="workspace-guide"><div><strong>从发布任务，到完成考勤核对</strong><p>任务发布后名单固定，转班不改变旧任务统计。需要修改学生信息，可进入学生管理。</p></div><a class="button secondary" href="{{ url_for('management.students') }}">{{ icon('users') }}管理学生</a></div>
+<section class="task-workspace" id="task-list" aria-label="我的签到任务">
+  <div class="section-heading"><h2>我的签到任务 <span class="count-pill">{{ items|length }}</span></h2><span class="small muted">更新于 {{ updated_at|beijing }}</span></div>
   {{ task_tools(['进行中', '未开始', '已结束']) }}
   <div class="task-grid">
     {% for task, state, stats in items %}
@@ -17,7 +22,7 @@
       <div class="task-time">{{ icon('clock') }}<div><span>开始 <time>{{ task.start_time|beijing }}</time></span><span>结束 <time>{{ task.end_time|beijing }}</time></span></div></div>
       <div class="card-metrics"><span><strong>{{ stats.signed }}</strong> / {{ stats.expected }} 人已签到</span><span>{{ icon('pin', 14) }}{{ '%g'|format(task.radius_meters) }} 米</span></div>
       <progress class="attendance-progress" value="{{ stats.signed }}" max="{{ stats.expected or 1 }}" aria-label="已签到 {{ stats.signed }} 人，应到 {{ stats.expected }} 人"></progress>
-      <a class="button card-link" href="{{ url_for('teacher.results', task_id=task.id) }}">查看考勤结果 {{ icon('arrow') }}</a>
+      <a class="button card-link" data-task-link href="{{ url_for('teacher.results', task_id=task.id) }}">查看考勤结果 {{ icon('arrow') }}</a>
     </article>
     {% else %}
     <section class="panel empty"><span class="empty-icon">{{ icon('list', 28) }}</span><h3>开始你的第一次课堂签到</h3><p class="muted">选择班级、设置范围，即可发布签到任务。</p><a class="button" href="{{ url_for('teacher.create_task') }}">{{ icon('plus') }}创建签到任务</a></section>

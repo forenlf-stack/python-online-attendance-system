@@ -51,6 +51,8 @@ document.querySelectorAll(".checkin-button").forEach((button) => {
     const card = button.closest(".task-card");
     const feedback = card.querySelector(".checkin-feedback");
     const accuracy = card.querySelector(".location-accuracy");
+    const help = card.querySelector(".checkin-help");
+    if (help) help.hidden = true;
     button.disabled = true;
     button.setAttribute("aria-busy", "true");
     feedback.classList.remove("is-success", "is-error");
@@ -92,12 +94,17 @@ document.querySelectorAll(".checkin-button").forEach((button) => {
       card.dispatchEvent(new CustomEvent("attendance:checked-in", { bubbles: true }));
     } catch (error) {
       feedback.classList.add("is-error");
+      if (help) help.hidden = false;
       feedback.textContent = error.name === "AbortError" ? "网络请求超时，可先查看个人记录，再重试。" :
         error instanceof TypeError || error instanceof SyntaxError ? "网络或服务器请求失败，请检查连接后重试。" : error.message;
     } finally {
       button.disabled = success;
       button.removeAttribute("aria-busy");
       button.textContent = success ? "已签到" : "重新定位并签到";
+      if (success && card.querySelector(".after-checkin")) {
+        button.hidden = true;
+        card.querySelector(".after-checkin").hidden = false;
+      }
     }
   });
 });

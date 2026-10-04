@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% from '_ui.html' import icon, workflow_steps %}
+{% block title %}使用帮助{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">GETTING STARTED</p><h1>把签到流程，一次弄清楚</h1><p class="muted">从发布任务到核对考勤，也为常见问题准备了下一步。</p></div><a class="button secondary" href="{{ url_for('index') }}">{{ icon('back') }}{{ '返回工作台' if session.get('user_id') else '返回登录' }}</a></div>
+<div class="help-jump"><a href="#student-guide">学生怎么签到</a><a href="#teacher-guide">教师怎么管理</a><a href="#location">定位与网络</a><a href="#rules">状态与转班规则</a></div>
+<section class="panel help-section" id="student-guide"><div class="section-heading"><h2>{{ icon('pin', 22) }} 学生：到场、签到、核对</h2>{% if session.get('role') == 'student' %}<a href="{{ url_for('student.dashboard') }}">进入我的任务 →</a>{% endif %}</div>
+{{ workflow_steps([('找到任务', '进入班级任务，选择“可以签到”；转班前发布的任务也会保留。'), ('允许本次定位', '到达指定地点后点击“定位并签到”，等候服务器确认结果。'), ('核对记录', '成功后直接查看本次记录；教师调整的原因在个人记录中查看。')]) }}</section>
+<section class="panel help-section" id="teacher-guide"><div class="section-heading"><h2>{{ icon('users', 22) }} 教师：发布、核对、归档</h2>{% if session.get('role') == 'teacher' %}<a href="{{ url_for('teacher.create_task') }}">创建签到任务 →</a>{% endif %}</div>
+{{ workflow_steps([('创建任务', '选择班级和有效时间，获取中心位置并设置半径；发布时固定学生名单。'), ('查看结果', '刷新考勤结果，按姓名、学号或签到状态查找学生；导出完整 CSV 名单。'), ('处理更正', '进入“调整签到”补签、撤销或恢复，填写原因；姓名和班级在学生管理修改。')]) }}</section>
+<section class="panel help-section" id="location"><h2>定位与网络：遇到问题怎么办</h2>
+<details class="help-question" open><summary>定位权限被拒绝，或一直获取不到位置</summary><p>在浏览器站点设置和设备的位置设置中允许访问，再返回任务重新定位。室内信号或电脑定位能力可能有限，可换到信号较好的位置；仍失败时联系教师核实后补签。</p><p>本机请使用 localhost 或 127.0.0.1；手机访问需要可达的可信 HTTPS 服务。手机的 localhost 指向手机自身。</p></details>
+<details class="help-question"><summary>显示超出签到范围，或者定位精度较差</summary><p>确认自己在教师指定地点，再尝试重新定位。提示中的精度是设备估计误差，不会自动扩大签到半径。确实已到场仍失败时，请教师核对中心与范围，或核实后补签。</p></details>
+<details class="help-question"><summary>地图加载失败，还能签到吗</summary><p>可以。地图用于展示，签到由服务器根据本次坐标、时间和任务规则校验。网络恢复后可点击“重新加载地图”；系统没有本地示意图替代底图。</p></details>
+<details class="help-question"><summary>提交超时，不确定是否签到成功</summary><p>先进入个人记录，或刷新任务，确认是否已有成功记录。如果没有、且任务仍在有效时间内，再重试。系统会拒绝重复签到。</p></details>
+<details class="help-question"><summary>页面提示登录失效、安全校验失败或没有权限</summary><p>重新登录后从工作台进入目标页面。长时间未刷新、服务重启或切换账号可能使旧页面失效。不要使用浏览器刷新去重复发送已经提交的表单。</p><p>同一浏览器的普通标签页共享登录身份，师生同时演示请使用不同浏览器或独立配置文件。</p></details></section>
+<section class="panel help-section" id="rules"><h2>状态与数据规则</h2><div class="help-rule-grid"><div><h3>转班影响哪些任务</h3><p>只影响转班后新建的任务。已发布任务保留原名单，学生仍按原任务的时间和范围签到。</p></div><div><h3>补签、撤销与恢复</h3><p>补签记为已签到并标注教师来源，不产生定位坐标。撤销后学生不能自行覆盖教师决定；恢复原始状态会重新采用原定位记录，没有原记录则恢复未签到或缺勤。</p></div><div><h3>记录时间与缺勤</h3><p>所有时间按北京时间展示。教师补签显示操作时间；任务结束后，没有有效签到的学生计为缺勤。定位签到仅在任务有效时间和范围内允许。</p></div><div><h3>账号与个人信息</h3><p>账号由项目预置，没有公开注册或自行找回密码入口。姓名、班级问题请联系教师；需要账号或密码帮助，请联系课程负责人。</p></div></div></section>
+{% endblock %}

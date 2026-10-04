@@ -42,6 +42,10 @@ def create_app(test_config=None):
         role = session.get("role")
         return redirect(url_for(f"{role}.dashboard" if role in ("student", "teacher") else "auth.login"))
 
+    @app.get("/help")
+    def help_page():
+        return render_template("help.html")
+
     @app.errorhandler(CSRFError)
     def csrf_error(error):
         message = "安全校验失败，请刷新页面后重试（CSRF token 无效或已过期）。"

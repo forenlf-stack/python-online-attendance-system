@@ -8,9 +8,13 @@
   <div><p class="eyebrow">STUDENT WORKSPACE <span class="role-tag">学生端</span></p><h1>你好，{{ g.user.name }}</h1><p class="muted">{{ g.user.student_no }} <span class="separator">/</span> {{ g.user.class_name }}</p></div>
   <div class="page-actions"><a class="button secondary" href="{{ url_for('student.dashboard') }}">{{ icon('refresh') }}刷新任务</a><a class="button" href="{{ url_for('student.records') }}">{{ icon('check') }}查看个人记录</a></div>
 </div>
-<div class="notice location-notice">{{ icon('pin', 22) }}<div><strong>到达指定地点，完成今天的签到</strong><span>点击按钮后获取本次位置，请允许浏览器访问定位。</span></div></div>
-<section class="task-workspace" aria-label="本班签到任务">
-  <div class="section-heading"><h2>本班签到任务 <span class="count-pill">{{ items|length }}</span></h2><span class="small muted">所有时间均为北京时间</span></div>
+<div class="overview-grid" aria-label="我的签到概览">
+{% for state, label, hint, glyph in [('可以签到', '待签到', '在有效时间内到达指定范围', 'pin'), ('已签到', '已完成', '定位签到与教师补签均计入', 'check'), ('已撤销', '已撤销', '查看教师说明，必要时联系教师', 'list')] %}
+<a class="overview-card" href="{{ url_for('student.dashboard', state=state) }}#task-list" data-quick-filter="{{ state }}"><span class="overview-icon">{{ icon(glyph, 22) }}</span><div><span>{{ label }}</span><strong data-count-state="{{ state }}">{{ counts[state] }}</strong><small>{{ hint }}</small></div>{{ icon('arrow', 16) }}</a>
+{% endfor %}</div>
+<div class="notice location-notice">{{ icon('pin', 22) }}<div><strong>到达指定地点，完成今天的签到</strong><span>点击按钮后获取本次位置，请允许浏览器访问定位。定位失败可查看使用帮助。</span></div></div>
+<section class="task-workspace" id="task-list" aria-label="我的签到任务">
+  <div class="section-heading"><h2>我的签到任务 <span class="count-pill">{{ items|length }}</span></h2><span class="small muted">更新于 {{ updated_at|beijing }}</span></div>
   {{ task_tools(['可以签到', '未开始', '已签到', '已撤销', '已结束']) }}
   <div class="task-grid">
     {% for task, state in items %}
@@ -25,13 +29,14 @@
       <div class="checkin-action">
         {% if state == '可以签到' %}
         <button type="button" class="checkin-button" data-url="{{ url_for('student.checkin', task_id=task.id) }}" data-radius="{{ task.radius_meters }}">{{ icon('pin') }}定位并签到</button>
+        <a class="button secondary after-checkin" href="{{ url_for('student.records') }}#record-{{ task.id }}" hidden>{{ icon('check') }}查看本次签到记录 {{ icon('arrow') }}</a>
         {% elif state in ['已签到', '已撤销'] %}
-        <a class="button secondary" href="{{ url_for('student.records') }}">{{ icon('check') }}{{ '查看调整记录' if state == '已撤销' else '查看签到记录' }} {{ icon('arrow') }}</a>
+        <a class="button secondary" href="{{ url_for('student.records') }}{{ '#adjustments' if state == '已撤销' else '#record-' ~ task.id }}">{{ icon('check') }}{{ '查看调整记录' if state == '已撤销' else '查看签到记录' }} {{ icon('arrow') }}</a>
         {% else %}<button type="button" class="secondary" disabled>{{ icon('clock') }}{{ state }}</button>{% endif %}
       </div>
-      <p class="location-accuracy small muted"></p><p class="checkin-feedback small" role="status" aria-live="polite"></p>
+      <p class="location-accuracy small muted"></p><p class="checkin-feedback small" role="status" aria-live="polite"></p><a class="checkin-help small" href="{{ url_for('help_page') }}#location" hidden>定位或签到遇到问题？查看解决方法 →</a>
     </article>
-    {% else %}<section class="panel empty"><span class="empty-icon">{{ icon('list', 28) }}</span><h3>暂无本班任务</h3><p class="muted">教师发布任务后，刷新页面即可查看。</p><a class="button secondary" href="{{ url_for('student.dashboard') }}">{{ icon('refresh') }}刷新任务</a></section>{% endfor %}
+    {% else %}<section class="panel empty"><span class="empty-icon">{{ icon('list', 28) }}</span><h3>暂无签到任务</h3><p class="muted">教师将你加入新发布的任务后，刷新页面即可查看。</p><a class="button secondary" href="{{ url_for('student.dashboard') }}">{{ icon('refresh') }}刷新任务</a></section>{% endfor %}
   </div>
   <div class="panel empty filter-empty" hidden><span class="empty-icon">{{ icon('search', 28) }}</span><h3>没有找到匹配的任务</h3><p class="muted">试试其他关键词，或查看全部任务。</p><button class="secondary filter-reset" type="button">清除筛选</button></div>
 </section>

@@ -1,0 +1,102 @@
+/* Cohesive page hierarchy and task-oriented controls. */
+:root { --blue:#235cbb; --ink:#19324a; --border:#dfe7f1; }
+html { scroll-padding-top:24px; }
+body { background:linear-gradient(180deg,#edf3fc 0,#f6f8fc 520px); }
+.header-inner { max-width:1240px; }
+.brand-icon { box-shadow:0 4px 10px #245fc02b; }
+.container { max-width:1240px; }
+.panel { min-width:0; box-shadow:0 6px 22px #1a355908; border-radius:16px; }
+.page-heading h1 { max-width:760px; overflow-wrap:anywhere; }
+.page-actions { gap:8px; }
+.breadcrumbs { display:flex; flex-wrap:wrap; justify-content:flex-start; gap:9px; padding-top:23px; color:#7890a7; font-size:12px; width:auto; }
+.breadcrumbs a { color:#526c88; }
+.breadcrumbs [aria-current] { color:#243f5c; }
+.breadcrumbs + .page-heading { padding-top:17px; }
+.overview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-bottom:22px; }
+.overview-card { display:flex; gap:16px; align-items:center; padding:24px; color:var(--ink); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:0 5px 20px #1c3c5a04; }
+.overview-card:hover { text-decoration:none; border-color:#9bbbe8; background:#fbfdff; }
+.overview-card > div { flex:1; min-width:0; }
+.overview-card > div > span { font-size:13px; color:var(--muted); }
+.overview-card strong { display:block; font-size:32px; line-height:1.4; font-weight:750; color:#224e88; }
+.overview-card small { display:block; margin-top:3px; color:var(--muted); font-size:12px; }
+.overview-icon { display:grid; place-items:center; align-self:flex-start; padding:12px; background:#eef4ff; border-radius:13px; color:#3c71b9; }
+.overview-card:nth-child(2) .overview-icon { color:#24745f; background:#ebf7f2; }
+.overview-card:nth-child(3) .overview-icon { color:#976724; background:#fff6e5; }
+.workspace-guide { display:flex; align-items:center; gap:20px; justify-content:space-between; border:1px solid #d8e5f7; border-left:4px solid #5c87c6; border-radius:12px; background:#eef4ff; padding:20px 23px; margin-bottom:28px; }
+.workspace-guide p { margin:5px 0 0; font-size:13px; color:#506982; }
+.workspace-guide .button { flex-shrink:0; }
+.task-workspace { scroll-margin-top:22px; }
+.task-card { border-top:3px solid #dce7f7; }
+.task-card[data-task-state="进行中"],.task-card[data-task-state="可以签到"] { border-top-color:#62a991; }
+.task-card[data-task-state="未开始"] { border-top-color:#d6b36e; }
+.task-card .card-top { align-items:flex-start; }
+.class-label { overflow-wrap:anywhere; }
+.checkin-help { display:block; margin-top:8px; }
+.panel > .section-heading:first-child { margin-top:12px; }
+.result-map-panel { margin-top:25px; }
+.report-progress { background:white; border:1px solid var(--border); border-radius:13px; padding:16px 23px; margin:-5px 0 24px; }
+.report-progress > div { display:flex; justify-content:space-between; gap:10px; font-size:13px; }
+.report-progress span { color:var(--muted); }
+.report-progress progress { display:block; appearance:none; width:100%; height:7px; margin-top:12px; border:0; border-radius:7px; overflow:hidden; background:#e9eff8; }
+.report-progress progress::-webkit-progress-bar { background:#e9eff8; }
+.report-progress progress::-webkit-progress-value { background:#3d8eb1; border-radius:7px; }
+.report-progress progress::-moz-progress-bar { background:#3d8eb1; }
+.roster-tools { display:flex; align-items:center; flex-wrap:wrap; gap:12px; background:#f5f8fc; padding:14px; border-radius:11px; margin-bottom:15px; }
+.roster-tools > label:not(.task-search-wrap) { display:flex; align-items:center; gap:8px; font-size:13px; }
+.roster-tools select { width:auto; padding:8px 10px; }
+.roster-count { margin-left:auto; }
+.table-scroll { border-radius:9px; }
+.table-scroll table { min-width:560px; }
+[data-roster] table { min-width:870px; }
+tr:target { background:#fff3ce; outline:2px solid #dfbd70; outline-offset:-2px; scroll-margin-top:24px; }
+.field-help { margin:-9px 0 0; font-size:12px; color:var(--muted); line-height:1.8; }
+.quick-options { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; color:var(--muted); }
+.form-actions { flex-wrap:wrap; }
+.form-actions button { box-shadow:0 4px 12px #245fc018; }
+.help-panel { display:block; }
+.help-jump { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px; }
+.help-jump a { background:white; border:1px solid var(--border); padding:8px 16px; border-radius:24px; font-size:13px; }
+.help-section { margin-bottom:22px; scroll-margin-top:24px; }
+.help-section h2 .ui-icon { color:var(--blue); margin-right:7px; }
+.workflow-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; list-style:none; padding:0; margin:20px 0 8px; }
+.workflow-steps li { display:flex; align-items:flex-start; gap:8px; }
+.workflow-steps .step-number { flex-shrink:0; }
+.workflow-steps strong { display:block; font-size:15px; }
+.workflow-steps div > span { display:block; margin-top:6px; color:var(--muted); font-size:13px; line-height:1.9; }
+.help-question { border-top:1px solid var(--border); padding:16px 0; }
+.help-question summary { font-size:15px; font-weight:600; line-height:1.7; }
+.help-question p { color:var(--muted); font-size:14px; margin:12px 0 0; }
+.help-rule-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 36px; }
+.help-rule-grid h3 { font-size:15px; }
+.help-rule-grid p { font-size:14px; color:var(--muted); }
+.error-panel { max-width:780px; margin:70px auto; text-align:center; padding:48px; }
+.error-code { display:block; font-size:64px; line-height:1.4; color:#afc3e3; font-weight:750; margin-bottom:12px; }
+.error-panel h1 { font-size:25px; }
+.error-panel .page-actions { justify-content:center; margin-top:26px; }
+.login-panel { border-top:4px solid var(--blue); box-shadow:0 16px 50px #24507810; }
+.login-panel .stack { gap:17px; }
+.password-field { display:flex; align-items:center; border:1px solid #cad5e2; border-radius:8px; margin-top:-10px; overflow:hidden; }
+.password-field:focus-within { outline:3px solid #89b9fa; outline-offset:3px; }
+.password-field input { border:0 !important; border-radius:0 !important; }
+.password-field input:focus-visible { outline:none; }
+.password-toggle { flex-shrink:0; font-size:12px; padding:9px; background:transparent; color:var(--blue); border:0; min-height:40px; }
+.password-toggle:hover { background:#edf4ff; box-shadow:none; }
+.login-panel .login-role-hint { margin:0; padding:10px 12px; border-radius:9px; background:#f2f6fc; font-size:12px; }
+@media(max-width:1050px) { .header-inner { flex-wrap:wrap; gap:8px; } .header-inner nav { flex-wrap:wrap; } .overview-card { padding:18px; gap:10px; } .overview-icon { padding:9px; } }
+@media(max-width:700px) {
+  .overview-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+  .overview-card { display:block; padding:14px 11px; }
+  .overview-icon,.overview-card > .ui-icon,.overview-card small { display:none; }
+  .overview-card strong { font-size:28px; }
+  .overview-card > div > span { font-size:12px; }
+  .workspace-guide { flex-direction:column; align-items:flex-start; padding:17px; gap:14px; }
+  .workflow-steps,.help-rule-grid { grid-template-columns:1fr; }
+  .workflow-steps { gap:22px; }
+  .help-section { padding:22px; }
+  .roster-tools { gap:10px; }
+  .roster-count { margin-left:0; }
+  .error-panel { margin:35px auto; padding:25px; }
+  .error-code { font-size:50px; }
+  .page-actions { flex-wrap:wrap; }
+  .page-actions .button { min-width:120px; }
+}
